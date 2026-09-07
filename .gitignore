@@ -1,0 +1,15 @@
+target/
+*.class
+
+node_modules/
+dist/
+
+.env
+
+.vscode/
+.idea/
+
+*.log
+
+.DS_Store
+Thumbs.db
