@@ -2,6 +2,8 @@ package com.healthcare.department.controller;
 
 import com.healthcare.department.Department;
 import com.healthcare.department.repository.DepartmentRepository;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,17 +32,24 @@ public class DepartmentController {
     }
 
     @PostMapping
-    public Department createDepartment(@RequestBody Department department) {
-        return departmentRepository.save(department);
+    public ResponseEntity<Department> createDepartment(
+            @Valid @RequestBody Department department) {
+
+        Department savedDepartment = departmentRepository.save(department);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedDepartment);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Department> updateDepartment(
             @PathVariable Long id,
-            @RequestBody Department departmentDetails) {
+            @Valid @RequestBody Department departmentDetails) {
 
         return departmentRepository.findById(id)
                 .map(department -> {
+
                     department.setName(departmentDetails.getName());
                     department.setDescription(departmentDetails.getDescription());
 
@@ -54,11 +63,13 @@ public class DepartmentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
+
         if (!departmentRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
         departmentRepository.deleteById(id);
+
         return ResponseEntity.noContent().build();
     }
 }

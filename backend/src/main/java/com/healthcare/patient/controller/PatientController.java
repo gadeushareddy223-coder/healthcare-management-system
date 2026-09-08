@@ -2,6 +2,8 @@ package com.healthcare.patient.controller;
 
 import com.healthcare.patient.Patient;
 import com.healthcare.patient.repository.PatientRepository;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,14 +32,20 @@ public class PatientController {
     }
 
     @PostMapping
-    public Patient createPatient(@RequestBody Patient patient) {
-        return patientRepository.save(patient);
+    public ResponseEntity<Patient> createPatient(
+            @Valid @RequestBody Patient patient) {
+
+        Patient savedPatient = patientRepository.save(patient);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedPatient);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Patient> updatePatient(
             @PathVariable Long id,
-            @RequestBody Patient patientDetails) {
+            @Valid @RequestBody Patient patientDetails) {
 
         return patientRepository.findById(id)
                 .map(patient -> {
@@ -59,11 +67,13 @@ public class PatientController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
+
         if (!patientRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
         patientRepository.deleteById(id);
+
         return ResponseEntity.noContent().build();
     }
 }

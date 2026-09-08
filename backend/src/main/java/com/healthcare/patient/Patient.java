@@ -1,6 +1,8 @@
 package com.healthcare.patient;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 
@@ -12,9 +14,12 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Patient name is required")
     @Column(nullable = false, length = 100)
     private String name;
 
+    @NotBlank(message = "Patient email is required")
+    @Email(message = "Invalid email format")
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
