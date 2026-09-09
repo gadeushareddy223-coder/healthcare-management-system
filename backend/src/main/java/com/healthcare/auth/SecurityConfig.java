@@ -61,18 +61,34 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
 
+                        // Authentication APIs are public
+                        .requestMatchers("/api/auth/**")
+                        .permitAll()
+
+                        // Department APIs
                         .requestMatchers("/api/departments/**")
                         .hasAnyRole("ADMIN", "DOCTOR")
 
+                        // Patient APIs
                         .requestMatchers("/api/patients/**")
                         .hasAnyRole("ADMIN", "DOCTOR")
 
+                        // Appointment APIs
                         .requestMatchers("/api/appointments/**")
                         .hasAnyRole("ADMIN", "DOCTOR")
 
-                        .anyRequest().authenticated()
+                        // Prescription APIs
+                        .requestMatchers("/api/prescriptions/**")
+                        .hasAnyRole("ADMIN", "DOCTOR")
+
+                        // Medical History APIs
+                        .requestMatchers("/api/medical-history/**")
+                        .hasAnyRole("ADMIN", "DOCTOR")
+
+                        // Everything else requires authentication
+                        .anyRequest()
+                        .authenticated()
                 )
 
                 .addFilterBefore(
