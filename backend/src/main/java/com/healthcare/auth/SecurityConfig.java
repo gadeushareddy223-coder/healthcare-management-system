@@ -15,6 +15,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+
 @Configuration
 public class SecurityConfig {
 
@@ -54,8 +60,13 @@ public class SecurityConfig {
             throws Exception {
 
         http
+                // Disable CSRF for REST API
                 .csrf(csrf -> csrf.disable())
 
+                // Enable CORS
+                .cors(cors -> {})
+
+                // JWT authentication is stateless
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))
@@ -86,16 +97,60 @@ public class SecurityConfig {
                         .requestMatchers("/api/medical-history/**")
                         .hasAnyRole("ADMIN", "DOCTOR")
 
-                        // Everything else requires authentication
+                        // All other APIs require authentication
                         .anyRequest()
                         .authenticated()
                 )
 
+                // JWT filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration =
+                new CorsConfiguration();
+
+        // Allow React frontend
+        configuration.setAllowedOrigins(
+                Arrays.asList(
+                        "http://localhost:5173"
+                )
+        );
+
+        // Allow required HTTP methods
+        configuration.setAllowedMethods(
+                Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
+        );
+
+        // Allow all request headers
+        configuration.setAllowedHeaders(
+                Arrays.asList("*")
+        );
+
+        // Allow credentials such as Authorization headers
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
+
+        return source;
     }
 }
