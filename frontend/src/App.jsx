@@ -5,6 +5,7 @@ import {
   markNotificationAsRead,
   deleteNotification,
 } from "./services/notificationService";
+import DashboardAnalytics from "./components/DashboardAnalytics";
 import "./App.css";
 
 function App() {
@@ -371,11 +372,13 @@ function App() {
                 {notificationLoading ? (
 
                   <div className="notification-empty">
+
                     <div className="notification-empty-icon">
                       ...
                     </div>
 
                     <p>Loading notifications...</p>
+
                   </div>
 
                 ) : notifications.length === 0 ? (
@@ -501,6 +504,9 @@ function App() {
                 {error}
               </div>
             )}
+
+            {/* Dashboard Analytics */}
+            <DashboardAnalytics />
 
             {/* Department Section */}
             <section className="department-section">

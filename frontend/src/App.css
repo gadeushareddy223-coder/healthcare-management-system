@@ -1219,3 +1219,291 @@
   }
 
 }
+/* =========================================
+   DASHBOARD ANALYTICS
+   ========================================= */
+
+.dashboard-analytics {
+  margin-top: 32px;
+  margin-bottom: 36px;
+}
+
+.analytics-header {
+  margin-bottom: 22px;
+}
+
+.analytics-label {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  opacity: 0.65;
+}
+
+.analytics-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.analytics-header p:not(.analytics-label) {
+  margin-top: 7px;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+/* Analytics cards */
+
+.analytics-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.analytics-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding: 20px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.analytics-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.18);
+}
+
+.analytics-card > span {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  font-size: 25px;
+}
+
+.analytics-card p {
+  margin: 0 0 5px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  opacity: 0.65;
+}
+
+.analytics-card h3 {
+  margin: 0;
+
+  font-size: 27px;
+  font-weight: 800;
+}
+
+/* Chart card */
+
+.analytics-chart-card {
+  padding: 24px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.13);
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+}
+
+.chart-header h3 {
+  margin: 0;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.appointment-total {
+  padding: 9px 14px;
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.appointment-chart {
+  width: 100%;
+  min-height: 320px;
+}
+
+/* Recharts */
+
+.recharts-default-tooltip {
+  border-radius: 12px !important;
+}
+
+.recharts-legend-item-text {
+  font-size: 13px;
+}
+
+.recharts-text {
+  font-size: 12px;
+}
+
+/* Loading and error */
+
+.analytics-message,
+.analytics-error {
+  margin-top: 30px;
+  margin-bottom: 30px;
+
+  padding: 22px;
+
+  border-radius: 16px;
+
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  font-size: 14px;
+}
+
+.analytics-error {
+  border: 1px solid rgba(255, 100, 100, 0.3);
+}
+
+/* =========================================
+   ANALYTICS RESPONSIVE DESIGN
+   ========================================= */
+
+@media (max-width: 1000px) {
+
+  .analytics-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .analytics-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-chart-card {
+    padding: 16px;
+  }
+
+  .chart-header {
+    align-items: flex-start;
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .analytics-header h2 {
+    font-size: 24px;
+  }
+
+  .appointment-chart {
+    min-height: 280px;
+  }
+
+}
+/* =========================================
+   APPOINTMENT STATUS SUMMARY
+   ========================================= */
+
+.appointment-status-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.status-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 13px 15px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.status-summary-item > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  gap: 8px;
+}
+
+.status-name {
+  font-size: 13px;
+  opacity: 0.72;
+}
+
+.status-summary-item strong {
+  font-size: 16px;
+}
+
+/* Responsive status summary */
+
+@media (max-width: 900px) {
+
+  .appointment-status-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 550px) {
+
+  .appointment-status-summary {
+    grid-template-columns: 1fr;
+  }
+
+}
