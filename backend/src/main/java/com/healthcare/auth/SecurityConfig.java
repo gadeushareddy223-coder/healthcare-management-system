@@ -60,20 +60,17 @@ public class SecurityConfig {
             throws Exception {
 
         http
-                // Disable CSRF for REST API
                 .csrf(csrf -> csrf.disable())
 
-                // Enable CORS
                 .cors(cors -> {})
 
-                // JWT authentication is stateless
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Authentication APIs are public
+                        // Authentication APIs
                         .requestMatchers("/api/auth/**")
                         .permitAll()
 
@@ -97,12 +94,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/medical-history/**")
                         .hasAnyRole("ADMIN", "DOCTOR")
 
-                        // All other APIs require authentication
+                        // Notification APIs
+                        // Any authenticated user can access
+                        // their notification endpoints.
+                        .requestMatchers("/api/notifications/**")
+                        .authenticated()
+
+                        // Everything else requires login
                         .anyRequest()
                         .authenticated()
                 )
 
-                // JWT filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
@@ -117,14 +119,12 @@ public class SecurityConfig {
         CorsConfiguration configuration =
                 new CorsConfiguration();
 
-        // Allow React frontend
         configuration.setAllowedOrigins(
                 Arrays.asList(
                         "http://localhost:5173"
                 )
         );
 
-        // Allow required HTTP methods
         configuration.setAllowedMethods(
                 Arrays.asList(
                         "GET",
@@ -135,12 +135,10 @@ public class SecurityConfig {
                 )
         );
 
-        // Allow all request headers
         configuration.setAllowedHeaders(
                 Arrays.asList("*")
         );
 
-        // Allow credentials such as Authorization headers
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =

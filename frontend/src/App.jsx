@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "./services/api";
+import {
+  getNotifications,
+  markNotificationAsRead,
+  deleteNotification,
+} from "./services/notificationService";
 import "./App.css";
 
 function App() {
@@ -7,6 +12,10 @@ function App() {
   const [role, setRole] = useState("");
   const [token, setToken] = useState("");
   const [departments, setDepartments] = useState([]);
+
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationLoading, setNotificationLoading] = useState(false);
 
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -26,6 +35,7 @@ function App() {
       setRole(savedRole || "");
 
       loadDepartments(savedToken);
+      loadNotifications();
     }
   }, []);
 
@@ -41,6 +51,20 @@ function App() {
     } catch (err) {
       console.error("Failed to load departments:", err);
       setError("Unable to load departments.");
+    }
+  };
+
+  const loadNotifications = async () => {
+    try {
+      setNotificationLoading(true);
+
+      const data = await getNotifications();
+
+      setNotifications(data);
+    } catch (err) {
+      console.error("Failed to load notifications:", err);
+    } finally {
+      setNotificationLoading(false);
     }
   };
 
@@ -74,6 +98,7 @@ function App() {
       setLoginPassword("");
 
       await loadDepartments(receivedToken);
+      await loadNotifications();
     } catch (err) {
       console.error("Login error:", err);
 
@@ -82,6 +107,50 @@ function App() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      await markNotificationAsRead(notificationId);
+
+      setNotifications((currentNotifications) =>
+        currentNotifications.map((notification) =>
+          notification.id === notificationId
+            ? {
+                ...notification,
+                isRead: true,
+              }
+            : notification
+        )
+      );
+    } catch (err) {
+      console.error(
+        "Failed to mark notification as read:",
+        err
+      );
+
+      setError("Unable to mark notification as read.");
+    }
+  };
+
+  const handleDeleteNotification = async (notificationId) => {
+    try {
+      await deleteNotification(notificationId);
+
+      setNotifications((currentNotifications) =>
+        currentNotifications.filter(
+          (notification) =>
+            notification.id !== notificationId
+        )
+      );
+    } catch (err) {
+      console.error(
+        "Failed to delete notification:",
+        err
+      );
+
+      setError("Unable to delete notification.");
     }
   };
 
@@ -94,10 +163,16 @@ function App() {
     setUsername("");
     setRole("");
     setDepartments([]);
+    setNotifications([]);
+    setShowNotifications(false);
 
     setMessage("You have been logged out.");
     setError("");
   };
+
+  const unreadCount = notifications.filter(
+    (notification) => !notification.isRead
+  ).length;
 
   return (
     <div className="app">
@@ -237,20 +312,193 @@ function App() {
 
               </div>
 
-              <button
-                className="logout-button"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
+              <div className="user-actions">
+
+                {/* Notification Button */}
+                <button
+                  className="notification-button"
+                  onClick={() =>
+                    setShowNotifications(
+                      !showNotifications
+                    )
+                  }
+                  title="Notifications"
+                >
+                  <span className="notification-icon">
+                    ♢
+                  </span>
+
+                  {unreadCount > 0 && (
+                    <span className="notification-badge">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Logout */}
+                <button
+                  className="logout-button"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+
+              </div>
 
             </section>
+
+            {/* Notification Panel */}
+            {showNotifications && (
+
+              <section className="notification-panel">
+
+                <div className="notification-header">
+
+                  <div>
+                    <h2>Notifications</h2>
+
+                    <p>
+                      Stay updated with your healthcare activity
+                    </p>
+                  </div>
+
+                  <span className="notification-count">
+                    {unreadCount} unread
+                  </span>
+
+                </div>
+
+                {notificationLoading ? (
+
+                  <div className="notification-empty">
+                    <div className="notification-empty-icon">
+                      ...
+                    </div>
+
+                    <p>Loading notifications...</p>
+                  </div>
+
+                ) : notifications.length === 0 ? (
+
+                  <div className="notification-empty">
+
+                    <div className="notification-empty-icon">
+                      ✓
+                    </div>
+
+                    <h3>You're all caught up</h3>
+
+                    <p>
+                      You don't have any notifications right now.
+                    </p>
+
+                  </div>
+
+                ) : (
+
+                  <div className="notification-list">
+
+                    {notifications.map((notification) => (
+
+                      <div
+                        className={`notification-item ${
+                          !notification.isRead
+                            ? "notification-unread"
+                            : ""
+                        }`}
+                        key={notification.id}
+                      >
+
+                        <div className="notification-item-icon">
+                          {notification.type ===
+                          "APPOINTMENT"
+                            ? "✓"
+                            : "•"}
+                        </div>
+
+                        <div className="notification-item-content">
+
+                          <div className="notification-item-top">
+
+                            <span className="notification-type">
+                              {notification.type ||
+                                "GENERAL"}
+                            </span>
+
+                            {!notification.isRead && (
+                              <span className="unread-label">
+                                NEW
+                              </span>
+                            )}
+
+                          </div>
+
+                          <p>
+                            {notification.message}
+                          </p>
+
+                          {notification.createdAt && (
+                            <small>
+                              {new Date(
+                                notification.createdAt
+                              ).toLocaleString()}
+                            </small>
+                          )}
+
+                          <div className="notification-actions">
+
+                            {!notification.isRead && (
+                              <button
+                                className="notification-read-button"
+                                onClick={() =>
+                                  handleMarkAsRead(
+                                    notification.id
+                                  )
+                                }
+                              >
+                                Mark as read
+                              </button>
+                            )}
+
+                            <button
+                              className="notification-delete-button"
+                              onClick={() =>
+                                handleDeleteNotification(
+                                  notification.id
+                                )
+                              }
+                            >
+                              Delete
+                            </button>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                )}
+
+              </section>
+
+            )}
 
             {/* Success Message */}
             {message && (
               <div className="success-message">
                 <span className="success-icon">✓</span>
                 {message}
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+              <div className="error-message">
+                {error}
               </div>
             )}
 
