@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import api from "./services/api";
+
 import {
   getNotifications,
   markNotificationAsRead,
   deleteNotification,
 } from "./services/notificationService";
+
 import DashboardAnalytics from "./components/DashboardAnalytics";
+import AiAssistant from "./components/AiAssistant";
+
 import "./App.css";
 
 function App() {
@@ -325,6 +329,7 @@ function App() {
                   }
                   title="Notifications"
                 >
+
                   <span className="notification-icon">
                     ♢
                   </span>
@@ -334,6 +339,7 @@ function App() {
                       {unreadCount}
                     </span>
                   )}
+
                 </button>
 
                 {/* Logout */}
@@ -413,8 +419,7 @@ function App() {
                       >
 
                         <div className="notification-item-icon">
-                          {notification.type ===
-                          "APPOINTMENT"
+                          {notification.type === "APPOINTMENT"
                             ? "✓"
                             : "•"}
                         </div>
@@ -507,6 +512,9 @@ function App() {
 
             {/* Dashboard Analytics */}
             <DashboardAnalytics />
+
+            {/* Healthcare AI Assistant */}
+            <AiAssistant />
 
             {/* Department Section */}
             <section className="department-section">
